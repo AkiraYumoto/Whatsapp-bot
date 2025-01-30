@@ -18,6 +18,22 @@ engine = pyttsx3.init()
 engine.setProperty('rate', 150) #Velocidad del TTS
 engine.setProperty('voice', 'es') #Voz español
 
+ACCESS_KEY = "n/ByUr5lxWfS2GGC/HpYkk8fpOws+N0C9siFUlJ4o8K7sZaA/j7Pyg==" 
+
+porcupine = pvporcupine.create(access_key=ACCESS_KEY, keyword_paths=["hola_bot.ppn"])
+
+pa = pyaudio.PyAudio()
+audio_stream = pa.open(rate=porcupine.sample_rate, channels=1, format=pyaudio.paInt16, input=True, frames_per_buffer=porcupine.frame_length)
+
+print("Esperando palabra clave...")
+
+while True:
+    pcm = struct.unpack_from("h" * porcupine.frame_length, audio_stream.read(porcupine.frame_length))
+    keyword_index = porcupine.process(pcm)
+    if keyword_index >= 0:
+        print("¡Palabra clave detectada!")
+        break  # Aquí puedes ejecutar tu bot
+
 def hablar(texto):
     engine.say(texto)
     engine.runAndWait() 
